@@ -1,0 +1,9 @@
+.*.swp
+*.pyc
+*.egg-info
+.DS_Store
+.idea
+dist
+build/lib/
+build/scripts-2.7/london-admin.py
+*.egg

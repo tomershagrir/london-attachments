@@ -1,0 +1,40 @@
+ATTACHMENTS MODEL DESIGN
+========================
+
+The model classe Document is used for the file storing in the database and local file system.
+
+    >>> from attachments.models import Document
+
+    >>> d1 = Document()
+    >>> d1['title'] = 'Passport'
+    >>> d1['tags'] = ['passport','id']
+    >>> # mime_type
+    >>> # file
+    >>> d1.save()
+
+Once that document is ready in the system, it can be attached to how many other objects are necessary
+
+    >>> assert_equal(d1['attachments'].count(), 0)
+
+    >>> from london.apps.auth.models import User
+    >>> user1 = User(_save=True, username='leticia')
+    >>> d1.attach_to(user1)
+    >>> assert_equal(d1['attachments'].count(), 1)
+
+That is controlled by the model class DocumentAttachment
+
+    >>> from attachments.models import DocumentAttachment
+    >>> assert_equal(DocumentAttachment.query().filter(document=d1).count(), 1)
+
+When the other object is deleted, the link is removed
+
+    >>> user1.delete()
+    >>> assert_equal(d1['attachments'].count(), 0)
+
+To retrieve the documents attached to an object, we call the method ".attached_to(obj)"
+
+    >>> user2 = User(_save=True, username='verinha')
+    >>> d1.attach_to(user2)
+
+    >>> assert_equal(Document.query().attached_to(user2).count(), 1)
+
