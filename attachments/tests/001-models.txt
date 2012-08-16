@@ -1,6 +1,8 @@
 ATTACHMENTS MODEL DESIGN
 ========================
 
+    >>> from london.test import assert_equal, assert_true
+
 The model classe Document is used for the file storing in the database and local file system.
 
     >>> from attachments.models import Document
@@ -10,7 +12,7 @@ The model classe Document is used for the file storing in the database and local
     >>> d1['tags'] = ['passport','id']
     >>> # mime_type
     >>> # file
-    >>> d1.save()
+    >>> assert_true(d1.save())
 
 Once that document is ready in the system, it can be attached to how many other objects are necessary
 
