@@ -15,8 +15,9 @@ class Document(models.Model):
 
     title = models.CharField(max_length=100, db_index=True)
     tags = models.ListField(blank=True, null=True, db_index=True)
-    file = models.FileField()
+    local_file = models.FileField(blank=True, null=True, upload_to='attachments')
     mime_type = models.CharField(max_length=100, db_index=True)
+    storage_info = models.DictField(blank=True, null=True) # Used for storing Google Drive information for this file
 
     def __unicode__(self):
         return self['title']

@@ -1,0 +1,47 @@
+FORM UTILITIES
+==============
+
+    >>> from london.utils.imports import import_anything
+    >>> from london.urls import patterns
+    >>> from london.test import assert_equal, assert_true
+    >>> from london.test.client import Client
+    >>> cl = Client()
+
+ModelForm class for helping attachments on an object
+----------------------------------------------------
+
+    >>> from attachments.forms import AttachmentsModelForm
+
+    >>> from london.apps.auth.models import User
+    >>> class UserForm(AttachmentsModelForm):
+    ...     class Meta:
+    ...         model = User
+    ...         fields = ('username','first_name')
+    ...         template = 'attachments/tests/test_form.html'
+    ... 
+    ...     class Attachments:
+    ...         engine = 'attachments.engines.FileSystem'
+    ...         upload_to = 'attachments/user' # if relative, it goes into settings.UPLOADS_ROOT
+
+    >>> urls = import_anything(cl.service.urls)
+    >>> urls.url_patterns = patterns('',(r'^test-attachment-user/add/$',UserForm)) + urls.url_patterns
+
+Using relative and string-typed upload_to
+
+    >>> resp = cl.get('/test-attachment-user/add/')
+    >>> assert_equal(resp.status_code, 200)
+
+TODO
+
+The attribute "upload_to" can also be an absolute path
+
+    >>> UserForm.Attachments.upload_to = '/tmp/uploads/'
+
+TODO
+
+... it can be also a lambda
+
+    >>> UserForm.Attachments.upload_to = lambda inst,filename: '/tmp/uploads/%s/%s' % (inst['pk'], filename)
+
+TODO
+
