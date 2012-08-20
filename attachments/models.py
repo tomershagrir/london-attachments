@@ -15,7 +15,7 @@ class Document(models.Model):
 
     title = models.CharField(max_length=100, db_index=True)
     tags = models.ListField(blank=True, null=True, db_index=True)
-    local_file = models.FileField(blank=True, null=True, upload_to='attachments')
+    local_file = models.CharField(max_length=200, blank=True, null=True)
     mime_type = models.CharField(max_length=100, db_index=True)
     storage_info = models.DictField(blank=True, null=True) # Used for storing Google Drive information for this file
 
@@ -28,6 +28,6 @@ class Document(models.Model):
 
 
 class DocumentAttachment(models.Model):
-    document = models.ForeignKey('Document', related_name='attachments')
+    document = models.ForeignKey('Document', related_name='attachments', delete_cascade=True)
     attached_to = models.ForeignKey(delete_cascade=True, db_index=True)
 

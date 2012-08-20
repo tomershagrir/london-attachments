@@ -3,6 +3,7 @@ import datetime
 import httplib2
 import json
 import urllib
+import tempfile
 
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.client import FlowExchangeError
@@ -89,7 +90,8 @@ def get_or_create_collection(service, title, parent_id=None):
         body['parents'] = [{'id':parent_id}]
     return service.files().insert(body=body).execute()
 
-def put_file(service, file_path, title, root_collection_id, collection=None, convert=False, description='', mime_type='application/octet-stream'):
+def put_file(service, file_path, title, root_collection_id, collection=None, convert=False, description='',
+        mime_type='application/octet-stream'):
     sub_colls = (collection.split('/') if collection else [])
 
     # Check file exists
@@ -100,7 +102,8 @@ def put_file(service, file_path, title, root_collection_id, collection=None, con
     collection_id = root_collection_id
     for coll_title in sub_colls:
         # Check existing collection
-        search = service.files().list(q="title='%s' and mimeType='%s' and '%s' in parents" % (coll_title, FOLDER_MIME, collection_id)).execute()
+        search = service.files().list(q="title='%s' and mimeType='%s' and '%s' in parents" % (coll_title, FOLDER_MIME,
+            collection_id)).execute()
 
         # Create if not existing
         if search['items']:
@@ -131,5 +134,38 @@ def put_file(service, file_path, title, root_collection_id, collection=None, con
 
 
 class GoogleDrive(BaseEngine):
-    pass
+    def save_file(self, form, obj, doc, attfile):
+        dir_path, file_name = os.path.split(form.generate_attachment_filename(obj, attfile.name))
+
+        # Saving in temporary file
+        temp_file = tempfile.NamedTemporaryFile(delete=False)
+        temp_file.write(attfile.read())
+        temp_file.close()
+
+        # Google Driver API service
+        service = form.get_google_drive_service()
+        root_collection_id = form.get_google_drive_root_collection_id()
+
+        # Uploading file to Google Drive
+        info = put_file(
+                service=service,
+                file_path=temp_file.name,
+                title=file_name,
+                root_collection_id=root_collection_id,
+                collection=dir_path,
+                convert=False,
+                mime_type=doc['mime_type'],
+                )
+
+        # File info in document
+        doc['storage_info'] = {
+            'file_id': info['id'],
+            'download_url': info.get('downloadUrl',''),
+            'thumb_url': info.get('thumbnailLink',''),
+            'alternate_url': info.get('alternateLink',''),
+            }
+        doc.save()
+
+        # Temporary file deletion
+        os.unlink(temp_file.name)
 
