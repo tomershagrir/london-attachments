@@ -27,7 +27,7 @@ class CurrentAttachmentsWidget(forms.Widget):
         for doc in self.attachments:
             storage_info = doc['storage_info']
             if storage_info.get('thumb_url',None):
-                thumb = '<div class="thumb" background="url(%s) no-repeat"/>' % storage_info['thumb_url']
+                thumb = '<div class="thumb" style="background-image:url(\'%s\')"/>' % storage_info['thumb_url']
             else:
                 thumb = '<div class="no-thumb">%s</div>' % MIME_LABELS.get(doc['mime_type'],doc['mime_type'])
 
