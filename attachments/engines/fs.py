@@ -27,3 +27,7 @@ class FileSystem(BaseEngine):
         doc['local_file'] = file_path
         doc.save()
 
+    def remove_file(self, form, obj, doc):
+        if obj['local_list'] and os.path.exists(obj['local_list']):
+            os.unlink(obj['local_list'])
+

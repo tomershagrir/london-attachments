@@ -81,7 +81,12 @@ class AttachmentsModelForm(BaseModelForm):
         return obj
 
     def save_attachments(self, obj):
-        engine_cls = import_anything(self.Attachments.engine)
+        try:
+            engine_str = self.Attachments.engine
+        except AttributeError:
+            engine_str = app_settings.DEFAULT_ENGINE
+
+        engine_cls = import_anything(engine_str)
         engine_cls().save_form(self, obj)
 
     def generate_attachment_filename(self, inst, filename):

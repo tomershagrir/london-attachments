@@ -9,7 +9,7 @@ from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.client import FlowExchangeError
 from oauth2client.client import OAuth2Credentials
 from apiclient.discovery import build
-from apiclient.http import MediaFileUpload
+from apiclient.http import MediaFileUpload, HttpError
 
 from attachments import app_settings
 from base import BaseEngine
@@ -132,6 +132,9 @@ def put_file(service, file_path, title, root_collection_id, collection=None, con
 
     return file_info
 
+def remove_file(service, file_id):
+    info = service.files().delete(fileId=file_id).execute()
+
 
 class GoogleDrive(BaseEngine):
     def save_file(self, form, obj, doc, attfile):
@@ -168,4 +171,12 @@ class GoogleDrive(BaseEngine):
 
         # Temporary file deletion
         os.unlink(temp_file.name)
+
+    def remove_file(self, form, obj, doc):
+        if doc['storage_info'] and doc['storage_info'].get('file_id',None):
+            service = form.get_google_drive_service()
+            try:
+                remove_file(service, doc['storage_info']['file_id'])
+            except HttpError as e:
+                pass
 

@@ -4,6 +4,8 @@ app_settings = AppSettings()
 
 app_settings.declare('ATTACHABLE_MODELS', default=None)
 app_settings.declare('LOCAL_ROOT', default='attachments', global_name='ATTACHMENTS_LOCAL_ROOT')
+app_settings.declare('DEFAULT_ENGINE', default='attachments.engines.FileSystem',
+        global_name='ATTACHMENTS_ENGINE')
 
 # Google Drive settings
 app_settings.declare('GOOGLE_DRIVE_CLIENT_ID', default='')
