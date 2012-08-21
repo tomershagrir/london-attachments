@@ -4,6 +4,16 @@ from london.utils.imports import import_anything
 from london.utils.safestring import mark_safe
 
 from attachments.models import Document
+from attachments import app_settings
+
+
+MIME_LABELS = {
+    'image/gif':'GIF Image',
+    'image/jpg':'JPEG Image',
+    'image/jpeg':'JPEG Image',
+    'image/png':'PNG Image',
+    'application/pdf':'PDF Document',
+    }
 
 
 class CurrentAttachmentsWidget(forms.Widget):
@@ -16,7 +26,10 @@ class CurrentAttachmentsWidget(forms.Widget):
         output = []
         for doc in self.attachments:
             storage_info = doc['storage_info']
-            thumb = ('<img src="%s"/>' % storage_info['thumb_url']) if storage_info.get('thumb_url',None) else ''
+            if storage_info.get('thumb_url',None):
+                thumb = '<div class="thumb" background="url(%s) no-repeat"/>' % storage_info['thumb_url']
+            else:
+                thumb = '<div class="no-thumb">%s</div>' % MIME_LABELS.get(doc['mime_type'],doc['mime_type'])
 
             output.append('<li><a href="%(url)s">%(title)s %(thumb)s</a><br/><span><input type="checkbox" value="%(id)s" name="%(name)s"/>Remove</span></li>' % {
                 'url': storage_info['download_url'],
@@ -44,10 +57,10 @@ class AttachmentsModelForm(BaseModelForm):
         obj = BaseModelForm.__new__(cls, *args, **kwargs)
 
         # Changes the fields order
-        obj._meta.fields.keyOrder.remove('current_attachments')
         obj._meta.fields.keyOrder.remove('new_attachments')
-        obj._meta.fields.keyOrder.append('current_attachments')
+        obj._meta.fields.keyOrder.remove('current_attachments')
         obj._meta.fields.keyOrder.append('new_attachments')
+        obj._meta.fields.keyOrder.append('current_attachments')
 
         return obj
 
