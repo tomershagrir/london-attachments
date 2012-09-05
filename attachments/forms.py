@@ -57,10 +57,11 @@ class AttachmentsModelForm(BaseModelForm):
         obj = BaseModelForm.__new__(cls, *args, **kwargs)
 
         # Changes the fields order
-        obj._meta.fields.keyOrder.remove('new_attachments')
-        obj._meta.fields.keyOrder.remove('current_attachments')
-        obj._meta.fields.keyOrder.append('new_attachments')
-        obj._meta.fields.keyOrder.append('current_attachments')
+        if hasattr(obj, '_meta'):
+            obj._meta.fields.keyOrder.remove('new_attachments')
+            obj._meta.fields.keyOrder.remove('current_attachments')
+            obj._meta.fields.keyOrder.append('new_attachments')
+            obj._meta.fields.keyOrder.append('current_attachments')
 
         return obj
 

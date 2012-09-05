@@ -13,7 +13,7 @@ packages = ['attachments']
 
 setup(
     name='London Attachments',
-    version=0.1,
+    version=0.1.1,
     #url='',
     author="Marinho Brandao",
     license="BSD License",
