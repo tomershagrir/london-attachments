@@ -26,13 +26,15 @@ class CurrentAttachmentsWidget(forms.Widget):
         output = []
         for doc in self.attachments:
             storage_info = doc['storage_info']
-            if storage_info.get('thumb_url',None):
+            if not storage_info:
+                thumb = ''
+            elif storage_info.get('thumb_url',None):
                 thumb = '<div class="thumb" style="background-image:url(\'%s\')"/>' % storage_info['thumb_url']
             else:
                 thumb = '<div class="no-thumb">%s</div>' % MIME_LABELS.get(doc['mime_type'],doc['mime_type'])
 
             output.append('<li><a href="%(url)s">%(title)s %(thumb)s</a><br/><span><input type="checkbox" value="%(id)s" name="%(name)s"/>Remove</span></li>' % {
-                'url': storage_info['download_url'],
+                'url': storage_info['download_url'] if storage_info else '',
                 'title': doc['title'],
                 'thumb': thumb,
                 'id': doc['pk'],
