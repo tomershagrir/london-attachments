@@ -67,19 +67,26 @@ class AttachmentsModelForm(BaseModelForm):
 
         return obj
 
+    def __init__(self, *args, **kwargs):
+        super(AttachmentsModelForm, self).__init__(*args, **kwargs)
+
     def get_initial(self, initial=None):
         initial = super(AttachmentsModelForm, self).get_initial(initial)
 
-        if self.instance:
+        if self.instance and self.can_do_attachments():
             initial['current_attachments'] = Document.query().attached_to(self.instance)
             self.fields['current_attachments'].widget.attachments = initial['current_attachments']
+        else:
+            self.fields['new_attachments'].widget = forms.HiddenInput()
+            self.fields['current_attachments'].widget = forms.HiddenInput()
 
         return initial
 
     def save(self, commit=True, force_new=False):
         obj = super(AttachmentsModelForm, self).save(commit=commit, force_new=force_new)
 
-        self.save_attachments(obj)
+        if self.can_do_attachments():
+            self.save_attachments(obj)
 
         return obj
 
@@ -94,4 +101,7 @@ class AttachmentsModelForm(BaseModelForm):
 
     def generate_attachment_filename(self, inst, filename):
         return filename
+
+    def can_do_attachments(self):
+        return True
 

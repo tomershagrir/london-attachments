@@ -151,14 +151,14 @@ class GoogleDrive(BaseEngine):
 
         # Uploading file to Google Drive
         info = put_file(
-                service=service,
-                file_path=temp_file.name,
-                title=file_name,
-                root_collection_id=root_collection_id,
-                collection=dir_path,
-                convert=False,
-                mime_type=doc['mime_type'],
-                )
+            service=service,
+            file_path=temp_file.name,
+            title=file_name,
+            root_collection_id=root_collection_id,
+            collection=dir_path,
+            convert=False,
+            mime_type=doc['mime_type'],
+            )
 
         # File info in document
         doc['storage_info'] = {
