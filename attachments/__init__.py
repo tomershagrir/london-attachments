@@ -16,9 +16,9 @@ app_settings.declare('GOOGLE_DRIVE_REDIRECT_URL', default='http://tdispatch/pref
 app_settings.declare('GOOGLE_DRIVE_SCOPES', default=(
         'https://www.googleapis.com/auth/drive',
         'https://www.googleapis.com/auth/userinfo.email',
-        #'https://www.googleapis.com/auth/userinfo.profile',
-        #'https://docs.google.com/feeds/',
-        #'https://spreadsheets.google.com/feeds/',
-        #'https://docs.googleusercontent.com/',
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://docs.google.com/feeds/',
+        'https://spreadsheets.google.com/feeds/',
+        'https://docs.googleusercontent.com/',
         ))
 
