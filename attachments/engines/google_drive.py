@@ -21,11 +21,11 @@ def get_flow():
         app_settings.GOOGLE_DRIVE_CLIENT_ID,
         app_settings.GOOGLE_DRIVE_CLIENT_SECRET,
         ' '.join(app_settings.GOOGLE_DRIVE_SCOPES),
-        None, # user_agent
-        "https://accounts.google.com/o/oauth2/auth",
-        "https://accounts.google.com/o/oauth2/token",
+        redirect_uri=app_settings.GOOGLE_DRIVE_REDIRECT_URL,
+        # None, # user_agent
+        #"https://accounts.google.com/o/oauth2/auth",
+        #"https://accounts.google.com/o/oauth2/token",
         )
-    flow.redirect_uri = app_settings.GOOGLE_DRIVE_REDIRECT_URL
     return flow
 
 def get_authorization_url(user_id, state, flow=None):
@@ -38,7 +38,7 @@ def get_authorization_url(user_id, state, flow=None):
     flow.params['state'] = state
     # u'code': [u'4/rdMBTpmiemBITpy12bTCMHlEOOe6.slmVgVOMScYcshQV0ieZDArYbERicgI']
 
-    return flow.step1_get_authorize_url(app_settings.GOOGLE_DRIVE_REDIRECT_URL)
+    return flow.step1_get_authorize_url() #app_settings.GOOGLE_DRIVE_REDIRECT_URL)
 
 def get_new_credentials(auth_code, flow=None):
     if not flow:
