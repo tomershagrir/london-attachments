@@ -12,7 +12,8 @@ class BaseEngine(object):
                     continue
 
                 # Remove the attachment first
-                doc['attachments'].filter(attached_to=obj).delete(force_if_has_dependents=True)
+                for attachment in doc['attachments'].filter(attached_to=obj):
+                    attachment.delete()
 
                 # Removes the file only if this is the unique attachment the doc has
                 if doc['attachments'].count() == 0:
