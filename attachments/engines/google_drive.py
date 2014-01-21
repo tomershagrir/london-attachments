@@ -91,7 +91,7 @@ def get_or_create_collection(service, title, parent_id=None):
     return service.files().insert(body=body).execute()
 
 def put_file(service, file_path, title, root_collection_id, collection=None, convert=False, description='',
-        mime_type='application/octet-stream'):
+        mime_type='application/octet-stream', overwrite=False):
     sub_colls = (collection.split('/') if collection else [])
 
     # Check file exists
@@ -102,19 +102,28 @@ def put_file(service, file_path, title, root_collection_id, collection=None, con
     collection_id = root_collection_id
     for coll_title in sub_colls:
         # Check existing collection
-        search = service.files().list(q="title='%s' and mimeType='%s' and '%s' in parents" % (coll_title, FOLDER_MIME,
-            collection_id)).execute()
+        search = service.files().list(q="title='%s' and mimeType='%s' and '%s' in parents" % (
+            coll_title, FOLDER_MIME, collection_id)).execute()
 
         # Create if not existing
         if search['items']:
             collection_id = search['items'][0]['id']
         else:
             info = service.files().insert(body={
-                'title':coll_title,
-                'mimeType':FOLDER_MIME,
-                'parents':[{'id':collection_id}],
+                'title': coll_title,
+                'mimeType': FOLDER_MIME,
+                'parents': [{'id':collection_id}],
                 }).execute()
             collection_id = info['id']
+
+    # Verify if file exists
+    file_id = None
+    if overwrite:
+        search = service.files().list(q="title='%s' and mimeType='%s' and '%s' in parents" % (
+            title, mime_type, collection_id)).execute()
+        if search['items']:
+            file_id = search['items'][0]['id']
+            info = service.files().delete(fileId=file_id).execute()
 
     # Save file
     body = {
