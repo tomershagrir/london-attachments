@@ -91,7 +91,7 @@ def get_or_create_collection(service, title, parent_id=None):
     return service.files().insert(body=body).execute()
 
 def put_file(service, file_path, title, root_collection_id, collection=None, convert=False, description='',
-        mime_type='application/octet-stream', overwrite=False):
+        mime_type='application/octet-stream', overwrite=False, resumable=False):
     sub_colls = (collection.split('/') if collection else [])
 
     # Check file exists
@@ -134,7 +134,7 @@ def put_file(service, file_path, title, root_collection_id, collection=None, con
         }
     if description:
         body['description'] = description
-    media_body = MediaFileUpload(file_path, mimetype=mime_type, resumable=True)
+    media_body = MediaFileUpload(file_path, mimetype=mime_type, resumable=resumable)
 
     # File upload
     file_info = service.files().insert(body=body, media_body=media_body).execute()
